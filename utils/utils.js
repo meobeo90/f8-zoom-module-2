@@ -1,11 +1,29 @@
 // FORM UTILS
+// export function showError(group, message) {
+//   group.classList.add("invalid");
+//   group.querySelector(".error-message span").textContent = message;
+// }
+
+// export function clearError(group) {
+//   group.classList.remove("invalid");
+// }
+
+// export function inputClearEvent(input, group) {
+//   if (input && group) {
+//     input.addEventListener("input", () => clearError(group));
+//   }
+// }
+// FORM UTILS
 export function showError(group, message) {
+  if (!group) return;
   group.classList.add("invalid");
-  group.querySelector(".error-message span").textContent = message;
+
+  const span = group.querySelector(".error-message span");
+  if (span) span.textContent = message;
 }
 
 export function clearError(group) {
-  group.classList.remove("invalid");
+  if (group) group.classList.remove("invalid");
 }
 
 export function inputClearEvent(input, group) {

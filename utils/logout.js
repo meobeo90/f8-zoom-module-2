@@ -1,4 +1,5 @@
 import httpRequest from "./httpRequest.js";
+
 export function initLogout() {
   const logoutBtn = document.querySelector("#logoutBtn");
   const userMenu = document.querySelector(".user-menu");
@@ -13,30 +14,32 @@ export function initLogout() {
       const token = localStorage.getItem("access_token");
       const response = await httpRequest.post(
         "auth/logout",
-        {}, // body rỗng
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+
       console.log("Logout response:", response);
 
-      if (!response.ok) console.warn("Server logout failed:", response.error);
-      //Xóa thông tin đăng nhập
+      // Xóa token + user khỏi localStorage
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
 
-      //Ẩn avatar, hiện lại nút login / signup
-      userMenu.style.display = "none";
-      btnLogin.style.display = "inline-block";
-      btnSignup.style.display = "inline-block";
+      // Ẩn avatar, hiện lại login/signup
+      if (userMenu) userMenu.style.display = "none";
+      if (btnLogin) btnLogin.style.display = "inline-block";
+      if (btnSignup) btnSignup.style.display = "inline-block";
 
-      //Cập nhật tooltip
-      userAvatar.removeAttribute("data-tooltip");
+      if (userAvatar) userAvatar.removeAttribute("data-tooltip");
 
-      //Chuyển về trang chủ
-      window.location.href = "/";
+      const pathParts = window.location.pathname.split("/").filter(Boolean);
+      const basePath = pathParts.length > 0 ? `/${pathParts[0]}/` : "/";
+
+      console.log("Redirecting to:", basePath);
+      window.location.href = basePath;
     } catch (error) {
       console.error("Logout error:", error);
     }

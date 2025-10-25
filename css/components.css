@@ -848,6 +848,12 @@
   transition: all var(--transition-fast);
 }
 
+.password-form .input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .password-form .eye-btn {
   position: absolute;
   right: 15px;
