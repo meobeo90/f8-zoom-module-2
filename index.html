@@ -57,7 +57,11 @@
           </div>
 
           <div class="search-library">
-            <button class="search-library-btn">
+            <button
+              class="search-library-btn tooltip-btn"
+              data-tooltip="Search in your library"
+              data-placement="top"
+            >
               <i class="fas fa-search"></i>
             </button>
             <button class="sort-btn">
@@ -82,7 +86,13 @@
                 <i class="fas fa-home"></i>
               </button>
               <div class="search-input-wrapper">
-                <i class="fas fa-search search-icon"></i>
+                <span
+                  class="search-icon-trigger tooltip-btn"
+                  data-tooltip="Search"
+                  data-placement="bottom"
+                >
+                  <i class="fas fa-search search-icon"></i>
+                </span>
                 <input
                   type="text"
                   placeholder="What do you want to play?"
@@ -416,6 +426,50 @@
           </div>
         </div>
       </div>
+    </div>
+    <!-- Playlist view -->
+    <div class="edit-playlist-modal">
+      <section class="playlist-view">
+        <i class="fa-solid fa-xmark close-modal"></i>
+        <div class="playlist-header">
+          <h1 class="edit-playlist">Edit Detail</h1>
+
+          <div class="playlist-cover">
+            <img
+              src="./img/placeholder-playlists.png"
+              alt="Playlist Cover"
+              id="playlistCoverImg"
+            />
+            <div class="cover-overlay" id="coverUploadTrigger">
+              <i class="fas fa-camera"></i>
+              <span>Choose photo</span>
+            </div>
+            <input type="file" id="coverInput" accept="image/*" hidden />
+          </div>
+        </div>
+        <div class="playlist-meta">
+          <p class="playlist-type">Playlist</p>
+          <h1
+            class="playlist-name"
+            contenteditable="true"
+            id="playlistName"
+          ></h1>
+          <p
+            class="playlist-desc"
+            contenteditable="true"
+            id="playlistDesc"
+            placeholder="Add an optional description"
+          ></p>
+          <div class="playlist-action">
+            <button class="btn save-btn" id="savePlaylistBtn">Save</button>
+          </div>
+          <p>
+            By proceeding, you agree to give Spotify access to the image you
+            choose to upload. Please make sure you have the right to upload the
+            image.
+          </p>
+        </div>
+      </section>
     </div>
 
     <script src="./main.js" type="module"></script>

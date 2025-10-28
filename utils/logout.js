@@ -35,11 +35,16 @@ export function initLogout() {
 
       if (userAvatar) userAvatar.removeAttribute("data-tooltip");
 
-      const pathParts = window.location.pathname.split("/").filter(Boolean);
-      const basePath = pathParts.length > 0 ? `/${pathParts[0]}/` : "/";
-
-      console.log("Redirecting to:", basePath);
-      window.location.href = basePath;
+      // Chuyển hướng về Home
+      const currentPath = window.location.pathname;
+      if (currentPath.endsWith("index.html") || currentPath === "/") {
+        window.location.href =
+          window.location.origin + currentPath.replace("index.html", "");
+      } else {
+        const parts = currentPath.split("/").filter(Boolean);
+        const repoBase = parts.length > 0 ? `/${parts[0]}/` : "/";
+        window.location.href = window.location.origin + repoBase;
+      }
     } catch (error) {
       console.error("Logout error:", error);
     }

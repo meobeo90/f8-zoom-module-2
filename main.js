@@ -6,6 +6,7 @@ import { initLogin } from "./utils/login.js";
 import { initLogout } from "./utils/logout.js";
 import { updateUserUI } from "./utils/updateUserUI.js";
 import { initHome } from "./utils/renderHome.js";
+import { handleCreatePlaylist } from "./utils/createPlaylist.js";
 
 // === Vô hiệu hóa Context menu ===
 document.addEventListener("contextmenu", (e) => e.preventDefault());
@@ -116,5 +117,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   } else {
     updateUserUI(null, initTooltip);
+  }
+});
+
+// === CREATE PLAYLIST ===
+document.addEventListener("DOMContentLoaded", () => {
+  initTooltip;
+
+  const createBtn = document.querySelector(".create-btn");
+  if (createBtn) {
+    createBtn.addEventListener("click", handleCreatePlaylist);
   }
 });

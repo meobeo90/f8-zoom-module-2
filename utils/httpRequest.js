@@ -3,7 +3,7 @@ class HttpRequest {
     this.baseUrl = "https://spotify.f8team.dev/api/";
   }
 
-  // Hàm lấy token từ localStorage (dùng khóa "access_token" đã xác nhận)
+  // Hàm lấy token từ localStorage
   getAuthToken() {
     return localStorage.getItem("access_token");
   }
@@ -17,7 +17,7 @@ class HttpRequest {
         ...options,
         method,
         headers: {
-          ...options.headers,
+          ...(options.headers || {}),
           "Content-Type": "application/json",
         },
       };
@@ -32,31 +32,22 @@ class HttpRequest {
       }
 
       const res = await fetch(`${this.baseUrl}${path}`, _options);
+      const responseData = await res.json().catch(() => ({}));
 
-      const responseData = await res.json();
-
-      // 3. KIỂM TRA LỖI VÀ THROW EXCEPTION
-      if (!res.ok) {
-        const error = new Error(
-          responseData.message ||
-            `HTTP Error: ${res.status} for ${method} ${path}`
-        );
-        error.status = res.status;
-        error.data = responseData;
-        throw error; // Lệnh này bắt buộc phải có
-      }
-
-      // Trả về dữ liệu nếu thành công (status 2xx)
       return {
         status: res.status,
         ok: res.ok,
         data: responseData,
-        error: null,
+        error: res.ok ? null : responseData.error || responseData.message,
       };
     } catch (error) {
       console.error("HTTP Request Error:", error);
-      // Rất quan trọng: throw lại lỗi để initHome.js bắt được
-      throw error;
+      return {
+        ok: false,
+        data: null,
+        status: 0,
+        error: error.message || "Network error",
+      };
     }
   }
 

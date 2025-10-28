@@ -1,6 +1,4 @@
-import { loadLibraryData } from "./libraryLoad.js";
 export function updateUserUI(user, initTooltip) {
-  // --- Các phần tử giao diện ---
   const userMenu = document.querySelector(".user-menu");
   const userAvatarBtn = document.querySelector("#userAvatar");
   const avatarImg = userAvatarBtn?.querySelector("img");
@@ -9,12 +7,16 @@ export function updateUserUI(user, initTooltip) {
   const userName = document.querySelector(".user-name");
   const libraryContent = document.querySelector(".library-content");
 
+  let updatedUser = user;
   if (user) {
-    // --- User đã đăng nhập ---
-    // Lấy tên hiển thị: ưu tiên display_name, fallback sang email
-    const displayValue =
-      String(user.display_name || user.displayName || "").trim() ||
-      String(user.email || "");
+    // --- Xác định tên hiển thị ---
+    let displayValue = String(user.display_name || "").trim();
+
+    // Nếu displayName rỗng → fallback sang phần trước dấu @ của email
+    if (!displayValue && user.email) {
+      displayValue = user.email.split("@")[0];
+      updatedUser = { ...user, display_name: displayValue };
+    }
 
     // Ẩn nút Login/Signup
     if (btnLogin) btnLogin.style.display = "none";
@@ -28,7 +30,7 @@ export function updateUserUI(user, initTooltip) {
       const oldAvatar = userAvatarBtn.querySelector(".virtual-avatar");
       if (oldAvatar) oldAvatar.remove();
 
-      const firstLetter = displayValue.charAt(0).toUpperCase() || "";
+      const firstLetter = displayValue.charAt(0).toUpperCase();
       const avatarDiv = document.createElement("div");
       avatarDiv.classList.add("virtual-avatar");
       avatarDiv.textContent = firstLetter;
@@ -43,9 +45,6 @@ export function updateUserUI(user, initTooltip) {
 
     // Kích hoạt tooltip
     if (initTooltip) initTooltip("#userAvatar");
-
-    // Nạp lại thư viện sidebar ngay sau khi login
-    if (libraryContent) loadLibraryData();
   } else {
     // --- Chưa đăng nhập hoặc logout ---
     // Ẩn user menu, hiển thị lại login/signup
@@ -68,5 +67,7 @@ export function updateUserUI(user, initTooltip) {
         <p class="library-placeholder">Log in to create and share playlists.</p>
       `;
     }
+    updatedUser = null;
   }
+  return updatedUser;
 }

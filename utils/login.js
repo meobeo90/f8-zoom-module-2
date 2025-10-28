@@ -1,6 +1,6 @@
 import { updateUserUI } from "./updateUserUI.js";
 import { showError, inputClearEvent, initPasswordToggle } from "./utils.js";
-import { loadLibraryData } from "./libraryLoad.js"; //
+import { loadLibraryData } from "./libraryLoad.js";
 
 export function initLogin(httpRequest, showToast, initTooltip) {
   const loginForm = document.querySelector("#loginForm form");
@@ -27,6 +27,7 @@ export function initLogin(httpRequest, showToast, initTooltip) {
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
+    // ========== Client-side validation ==========
     let hasError = false;
     if (!email) {
       showError(emailGroup, "Please enter your email!");
@@ -40,51 +41,45 @@ export function initLogin(httpRequest, showToast, initTooltip) {
 
     try {
       const res = await httpRequest.post("auth/login", { email, password });
+      console.log("Login response:", res);
 
-      if (!res) {
-        showToast("Cannot connect to server!", "error");
+      if (!res.ok) {
+        // ========== Handle API error ==========
+        const apiMsg =
+          res.data?.error?.message ||
+          res.data?.message ||
+          res.error ||
+          "Invalid email or password";
+
+        if (res.status === 401) {
+          showToast("Invalid email or password", "error");
+        } else {
+          showToast(apiMsg, "error");
+        }
         return;
       }
 
-      if (res.status === 401 || res.error?.code === "INVALID_CREDENTIALS") {
-        showToast("Invalid email or password", "error");
-        return;
-      }
+      // ========== SUCCESS ==========
+      const { user, access_token } = res.data;
+      const normalizedUser = updateUserUI(user, initTooltip);
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
 
-      // ====== SUCCESS ======
-      if (res.status === 200 && res.data?.user) {
-        const { user, access_token } = res.data;
+      showToast("Login successful!", "success");
 
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("user", JSON.stringify(user));
+      // Nạp lại Library sau login
+      loadLibraryData();
 
-        showToast("Login successful!", "success");
+      // Đóng modal
+      const authModal = document.querySelector("#authModal");
+      if (authModal) authModal.classList.remove("show", "open");
+      document.body.style.overflow = "auto";
 
-        // Cập nhật header
-        updateUserUI(
-          {
-            email: user.email,
-            display_name: user.display_name || user.email,
-          },
-          initTooltip
-        );
-
-        // Nạp lại Library ngay sau khi login
-        loadLibraryData();
-
-        // Đóng modal
-        const authModal = document.querySelector("#authModal");
-        if (authModal) authModal.classList.remove("show", "open");
-        document.body.style.overflow = "auto";
-
-        // Reset form
-        loginForm.reset();
-      } else {
-        showToast("Login failed! Try again!", "error");
-      }
+      // Reset form
+      loginForm.reset();
     } catch (error) {
-      console.error("Login error:", error);
-      showToast("Something went wrong. Please try again!", "error");
+      console.error("Network/Login error:", error);
+      showToast("Network error. Please try again!", "error");
     }
   });
 }

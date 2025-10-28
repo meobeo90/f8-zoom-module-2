@@ -1,5 +1,6 @@
 import { updateUserUI } from "./updateUserUI.js";
 import { inputClearEvent, showError, initPasswordToggle } from "./utils.js";
+import { loadLibraryData } from "./libraryLoad.js";
 
 export function initSignup(httpRequest, showToast, initTooltip) {
   const signupForm = document.querySelector("#signupForm form");
@@ -81,18 +82,14 @@ export function initSignup(httpRequest, showToast, initTooltip) {
 
       if (res.status === 201 && res.data?.user) {
         const { user, access_token } = res.data;
+        const normalizedUser = updateUserUI(user, initTooltip);
         localStorage.setItem("access_token", access_token);
-        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(normalizedUser));
+
         showToast("Sign up successful!", "success");
 
-        updateUserUI(
-          {
-            email: user.email,
-            display_name: user.display_name || user.email,
-          },
-          initTooltip
-        );
-
+        // Nạp lại Library sau login
+        loadLibraryData();
         const authModal = document.querySelector("#authModal");
         if (authModal) authModal.classList.remove("show", "open");
         document.body.style.overflow = "auto";
