@@ -94,7 +94,10 @@ export async function loadCreatedPlaylists(container, currentUser) {
 
     filteredPlaylists.forEach((playlist) => {
       const creatorName =
-        playlist.user_display_name || playlist.user_username || currentUserName;
+        playlist.user_display_name ||
+        playlist.user_username ||
+        currentUser?.display_name ||
+        currentUser?.email?.split("@")[0];
 
       const html = `
         <div class="library-item created-playlist tooltip-btn"
@@ -197,52 +200,6 @@ async function loadFollowedArtists(container) {
     console.error("Error loading followed artists:", error);
   }
 }
-
-// // ===================== 5. GẮN SỰ KIỆN CLICK CHO SIDEBAR =====================
-// import { loadPlaylistDetail } from "./detailView.js";
-// import { loadArtistDetail } from "./detailView.js"; // nếu bạn cũng dùng chung trong đó
-// import { showToast } from "./toast.js";
-
-// document.addEventListener("click", async (e) => {
-//   const item = e.target.closest(".library-item");
-//   if (!item) return;
-
-//   const type = item.dataset.type;
-//   const id = item.dataset.id;
-
-//   // Lưu trạng thái để reload lại sau khi F5
-//   localStorage.setItem("last_view", JSON.stringify({ type, id }));
-
-//   try {
-//     // === Playlist người dùng hoặc playlist follow ===
-//     if (
-//       type === "playlist" ||
-//       type === "created_playlist" ||
-//       type === "followed_playlist"
-//     ) {
-//       await loadPlaylistDetail(id);
-//     }
-//     // === Playlist "Liked Songs" ===
-//     else if (type === "liked_tracks") {
-//       const fakePlaylist = {
-//         id: "liked_songs",
-//         name: "Liked Songs",
-//         image_url: "./img/liked-songs-cover.png",
-//         user_display_name: "You",
-//         is_public: 1,
-//         tracks: [],
-//       };
-//       await loadPlaylistDetail(fakePlaylist.id);
-//     }
-//     // === Artist ===
-//     else if (type === "artist") {
-//       await loadArtistDetail(id);
-//     }
-//   } catch (error) {
-//     console.error("Error loading item detail:", error);
-//     showToast("Error loading content. Please try again.", "error");
-//   }
-// });
 
 // ===================== 5. GẮN SỰ KIỆN CLICK CHO SIDEBAR =====================
 import { loadPlaylistDetail, loadArtistDetail } from "./detailView.js";
