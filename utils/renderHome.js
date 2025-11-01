@@ -131,6 +131,19 @@ function toggleSections({ show = [], hide = [] }) {
 }
 
 // ===================== RENDER HOME CARDS =====================
+function getDisplayName(playlist) {
+  const { user_display_name, user_username, user_email } = playlist;
+
+  if (user_display_name) return user_display_name;
+  if (user_username) return user_username;
+
+  // Nếu không có display name và username, tạo display_name bằng email
+  if (user_email) {
+    const nameFromEmail = user_email.split("@")[0];
+    return nameFromEmail || "Unknown";
+  }
+  return "Unknown";
+}
 
 // Hàm render Playlists
 function renderPlaylists(playlists, containter) {
@@ -150,8 +163,8 @@ function renderPlaylists(playlists, containter) {
           <div class="hit-card-info">
             <h3 class="hit-card-title">${escapeHTML(playlist.name)}</h3>
             <p class="hit-card-artist">${escapeHTML(
-              playlist.user_display_name || playlist.user_username || "Unknown"
-            )}</p>
+              getDisplayName(playlist)
+            )}</p>  
           </div>
         </div>`
     )

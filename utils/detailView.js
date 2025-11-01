@@ -157,8 +157,18 @@ function renderPlaylistHero(playlist) {
     if (deleteBtn) {
       deleteBtn.addEventListener("click", async () => {
         if (!confirm("Are you sure to delete this playlist?")) return;
+
         await httpRequest.delete(`playlists/${playlist.id}`);
         showToast(`${playlist.name} deleted`, "success");
+
+        window.location.hash = "";
+        localStorage.removeItem("last_view");
+
+        // Ẩn phần chi tiết playlist (nếu có)
+        const playlistView = document.querySelector(".playlist-view");
+        if (playlistView) playlistView.innerHTML = "";
+
+        // Quay về Home
         toggleSections({
           show: [".hits-section", ".artists-section"],
           hide: [".playlist-hero", ".popular-section"],
