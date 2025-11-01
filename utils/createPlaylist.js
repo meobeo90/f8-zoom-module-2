@@ -1,70 +1,70 @@
 import httpRequest from "./httpRequest.js";
+import { showToast } from "./toast.js";
 import { loadLibraryData } from "./libraryLoad.js";
-import { showPlaylistView } from "./playlistView.js";
+import { loadPlaylistDetail } from "./detailView.js"; // dùng chung 1 hàm render
 
-// ===== CREATE PLAYLIST =====
-export async function handleCreatePlaylist() {
+// ===== Lấy user hiện tại =====
+function getCurrentUser() {
   try {
-    const res = await httpRequest.post("playlists", {
-      name: "My playlist",
-    });
-    if (res.status !== 201 && res.status !== 200) {
-      throw new Error("Failed to create playlist");
+    const currentUser = localStorage.getItem("user");
+    return currentUser ? JSON.parse(currentUser) : null;
+  } catch (error) {
+    consolrror.error("parse user error", error);
+    return null;
+  }
+}
+
+// ===== Tạo playlist mới =====
+export async function createPlaylist() {
+  const user = getCurrentUser();
+  if (!user) {
+    showToast("Please login to use this feature", "warning");
+    return;
+  }
+
+  try {
+    // Lấy danh sách playlist hiện có
+    const listRes = await httpRequest.get("me/playlists");
+    const existing =
+      listRes?.data?.playlists || listRes?.playlists || listRes?.data || [];
+    const nextIndex = (Array.isArray(existing) ? existing.length : 0) + 1;
+
+    const body = {
+      name: `My Playlist #${nextIndex}`,
+      description: null,
+      is_public: 1,
+    };
+
+    // Gửi yêu cầu tạo playlist
+    const res = await httpRequest.post("playlists", body);
+    const newPlaylist =
+      res?.data?.playlist || res?.playlist || res?.data || res;
+
+    if (newPlaylist && newPlaylist.id) {
+      newPlaylist.user_display_name =
+        newPlaylist.user_display_name ||
+        user?.display_name ||
+        user?.email?.split("@")[0] ||
+        "You";
+
+      showToast(`Created: ${newPlaylist.name}`, "success");
+
+      // Cập nhật sidebar
+      await loadLibraryData();
+
+      // Hiển thị chi tiết playlist vừa tạo
+      await loadPlaylistDetail(newPlaylist.id, true);
+
+      // Lưu trạng thái
+      localStorage.setItem(
+        "last_view",
+        JSON.stringify({ type: "playlist", id: newPlaylist.id })
+      );
+    } else {
+      showToast("Failed to create playlist", "error");
     }
-
-    const newPlaylist = res.data?.playlist;
-    if (!newPlaylist) return;
-
-    loadLibraryData();
-    showPlaylistView(newPlaylist.id);
-  } catch (error) {
-    console.error("Create playlist error:", error);
-  }
-}
-
-// ===== UPLOAD ẢNH COVER =====
-export async function uploadPlaylistCover(playlistId, file) {
-  try {
-    const formData = new FormData();
-    formData.append("cover", file);
-    const uploadCover = await httpRequest.post(
-      `upload/playlist/${playlistId}/cover`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    const coverPath = uploadCover.data?.path;
-    if (!coverPath) throw new Error("Upload failed");
-    // Cập nhật playlist với ảnh mới
-    await httpRequest.put(`playlists/${playlistId}`, { coverPath });
-    // Cập nhật ảnh trên UI
-    const playlistCover = document.querySelector(
-      `.created-playlist[data-id="${playlistId}"] .playlist-icon img`
-    );
-    if (playlistCover) playlistCover.src = coverPath;
-    return { coverPath };
-  } catch (error) {
-    console.error("Upload cover error:", error);
-  }
-}
-
-// ===== CẬP NHẬT TÊN/MÔ TẢ PLAYLIST =====
-export async function updatePlaylistInfo(playlistId, newName, newDesc) {
-  try {
-    const res = await httpRequest.put(`playlists/${playlistId}`, {
-      name: newName,
-      description: newDesc,
-    });
-    if (res.status !== 200) throw new Error("Rename failed");
-    // Cập nhật tên ở sidebar
-    const playlistTitle = document.querySelector(
-      `.created-playlist[data-id="${playlistId}"] .item-title `
-    );
-    if (playlistTitle) playlistTitle.textContent = newName;
-  } catch (error) {
-    console.error("Rename playlist error:", error);
+  } catch (err) {
+    console.error("Create Playlist Error:", err);
+    showToast("Error creating playlist", "error");
   }
 }

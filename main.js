@@ -1,3 +1,4 @@
+// ====================== main.js ======================
 import httpRequest from "./utils/httpRequest.js";
 import { initTooltip } from "./utils/tooltips.js";
 import { showToast } from "./utils/toast.js";
@@ -6,14 +7,15 @@ import { initLogin } from "./utils/login.js";
 import { initLogout } from "./utils/logout.js";
 import { updateUserUI } from "./utils/updateUserUI.js";
 import { initHome } from "./utils/renderHome.js";
-import { handleCreatePlaylist } from "./utils/createPlaylist.js";
-
-// === Vô hiệu hóa Context menu ===
+import { loadLibraryData } from "./utils/libraryLoad.js";
+import { createPlaylist } from "./utils/createPlaylist.js";
+import { loadPlaylistDetail, loadArtistDetail } from "./utils/detailView.js";
+// === Tắt menu chuột phải mặc định ===
 document.addEventListener("contextmenu", (e) => e.preventDefault());
 
-// === Khởi tạo toàn bộ logic khi DOM sẵn sàng ===
+// === Toàn bộ logic chính ===
 document.addEventListener("DOMContentLoaded", async () => {
-  // ===== AUTH MODAL =====
+  // ====== AUTH MODAL ======
   const signupBtn = document.querySelector(".signup-btn");
   const loginBtn = document.querySelector(".login-btn");
   const authModal = document.getElementById("authModal");
@@ -23,27 +25,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   const showLoginBtn = document.getElementById("showLogin");
   const showSignupBtn = document.getElementById("showSignup");
 
+  // --- Hiển thị form login/signup ---
   const showSignupForm = () => {
     signupForm.style.display = "block";
     loginForm.style.display = "none";
   };
-
   const showLoginForm = () => {
     signupForm.style.display = "none";
     loginForm.style.display = "block";
   };
 
+  // --- Modal mở / đóng ---
   const openModal = () => {
     authModal.classList.add("show");
     document.body.style.overflow = "hidden";
   };
-
   const closeModal = () => {
     authModal.classList.remove("show");
     document.body.style.overflow = "auto";
   };
 
-  // Open/Close modal events
   signupBtn?.addEventListener("click", () => {
     showSignupForm();
     openModal();
@@ -53,24 +54,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     openModal();
   });
   modalClose?.addEventListener("click", closeModal);
-  authModal?.addEventListener(
-    "click",
-    (e) => e.target === authModal && closeModal()
-  );
-  document.addEventListener(
-    "keydown",
-    (e) => e.key === "Escape" && closeModal()
-  );
-
+  authModal?.addEventListener("click", (e) => {
+    if (e.target === authModal) closeModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
   showLoginBtn?.addEventListener("click", showLoginForm);
   showSignupBtn?.addEventListener("click", showSignupForm);
 
-  // === KHỞI TẠO SIGNUP/LOGIN ===
+  // === KHỞI TẠO SIGNUP / LOGIN / LOGOUT ===
   initSignup(httpRequest, showToast, initTooltip);
   initLogin(httpRequest, showToast, initTooltip);
   initLogout();
 
-  // === TOOLTIP + HOME ===
+  // === KHỞI TẠO TOOLTIP + HOME ===
   initTooltip(".tooltip-btn");
   initHome();
 
@@ -79,17 +77,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userDropdown = document.getElementById("userDropdown");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  // --- Toggle dropdown ---
   userAvatar?.addEventListener("click", (e) => {
     e.stopPropagation();
     userDropdown.classList.toggle("show");
   });
 
+  // --- Đóng dropdown khi click ra ngoài ---
   document.addEventListener("click", (e) => {
     if (!userAvatar?.contains(e.target) && !userDropdown?.contains(e.target)) {
       userDropdown?.classList.remove("show");
     }
   });
-
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") userDropdown?.classList.remove("show");
   });
@@ -100,14 +99,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     localStorage.removeItem("user");
     updateUserUI(null, initTooltip);
     showToast("Logged out successfully!", "success");
+
+    // 🔁 Sau khi logout → xóa playlist trong sidebar
+    const libraryContainer = document.querySelector(".library-content");
+    if (libraryContainer) libraryContainer.innerHTML = "";
   });
 
-  // === CHECK LOGIN STATUS ===
+  // === CHECK LOGIN STATUS & LOAD PLAYLIST ===
   const accessToken = localStorage.getItem("access_token");
   const userData = localStorage.getItem("user");
 
   if (accessToken && userData) {
     const parsedUser = JSON.parse(userData);
+
     updateUserUI(
       {
         email: parsedUser.email,
@@ -115,17 +119,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       },
       initTooltip
     );
+
+    // load sidebar (Liked + Created + Followed + Artists)
+    await loadLibraryData();
+
+    // === Restore last view sau khi login ===
+    const lastViewRaw = localStorage.getItem("last_view");
+
+    if (lastViewRaw) {
+      try {
+        const lastView = JSON.parse(lastViewRaw);
+
+        if (lastView.type === "playlist" && lastView.id) {
+          await loadPlaylistDetail(lastView.id);
+        } else if (lastView.type === "liked_tracks") {
+          await loadPlaylistDetail("liked_tracks");
+        } else if (lastView.type === "artist" && lastView.id) {
+          await loadArtistDetail(lastView.id);
+        } else {
+          initHome();
+        }
+      } catch (error) {
+        console.error("Error restoring last view:", error);
+        initHome();
+      }
+    } else {
+      initHome();
+    }
   } else {
     updateUserUI(null, initTooltip);
   }
-});
-
-// === CREATE PLAYLIST ===
-document.addEventListener("DOMContentLoaded", () => {
-  initTooltip;
-
+  // === NÚT TẠO PLAYLIST ===
   const createBtn = document.querySelector(".create-btn");
-  if (createBtn) {
-    createBtn.addEventListener("click", handleCreatePlaylist);
-  }
+  if (createBtn) createBtn.addEventListener("click", createPlaylist);
 });

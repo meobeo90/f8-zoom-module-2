@@ -310,7 +310,6 @@
 }
 
 .liked-songs i {
-  font-size: 24px;
   color: var(--text-primary);
 }
 
@@ -348,8 +347,7 @@
 }
 
 /* Artist/Playlist Hero */
-.artist-hero,
-.playlist-hero {
+.artist-hero {
   position: relative;
   height: 340px;
   margin: 0 -24px var(--spacing-lg) -24px;
@@ -401,7 +399,21 @@
   color: var(--accent-primary);
 }
 
-.playlist-creator-name {
+.playlist-hero {
+  position: relative;
+  height: 300px;
+  margin-bottom: var(--spacing-lg);
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+.playlist-header {
+  height: 100%;
+}
+
+.playlist-owner {
+  margin-top: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
   color: var(--text-primary);
   font-size: 20px;
@@ -410,7 +422,7 @@
 }
 .artist-name,
 .playlist-title {
-  font-size: 96px;
+  font-size: 80px;
   font-weight: 900;
   color: var(--text-primary);
   margin-bottom: var(--spacing-sm);
@@ -1216,11 +1228,14 @@
   background: #e74c3c;
 }
 
+.toast.warning {
+  background: #cfcc24fa;
+}
 /* Save to library button */
 .playlist-actions {
   display: flex;
   gap: 20px;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .btn-save {
@@ -1233,10 +1248,24 @@
   font-size: 20px;
   border: none;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
-.btn-save:hover {
+.btn-delete {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.btn-save:hover,
+.btn-delete:hover {
   transform: scale(1.1);
 }
 
@@ -1399,4 +1428,21 @@
   margin-top: 40px;
   font-size: 18px;
   color: var(--text-secondary);
+}
+
+/* === Liked Songs cover trong hero === */
+.playlist-cover.liked-songs-cover {
+  background: linear-gradient(135deg, #450af5, #c4efd9);
+}
+
+.playlist-cover.liked-songs-cover .item-icon.liked-songs {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 90px;
+  color: #fff;
+  background: transparent;
 }

@@ -1,5 +1,6 @@
 import httpRequest from "./httpRequest.js";
 import { refreshLibrary } from "./libraryRefresh.js";
+import { showToast } from "./toast.js";
 
 export async function setupActionButton(btn, type, id, isActive) {
   if (!btn) return;
@@ -32,7 +33,7 @@ export async function setupActionButton(btn, type, id, isActive) {
     const user = localStorage.getItem("user");
 
     if (!token && !user) {
-      alert("Please log in to use this feature.");
+      showToast("Please log in to use this feature.", "warning");
       return;
     }
 
