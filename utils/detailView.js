@@ -183,6 +183,17 @@ function renderPlaylistHero(playlist) {
     const saveBtn = hero.querySelector("#playlist-save-btn");
     setupActionButton(saveBtn, "playlist", playlist.id, playlist.is_followed);
   }
+  // Gắn sự kiện click vào ảnh hoặc tên playlist → mở modal edit
+  if (isOwner && !isLikedSongs) {
+    const title = hero.querySelector(".playlist-title");
+    const image = hero.querySelector(".playlist-cover");
+
+    [title, image].forEach((el) => {
+      el?.addEventListener("click", () => {
+        window.openEditModal(playlist);
+      });
+    });
+  }
 }
 
 // ===================== LOAD ARTIST DETAIL =====================

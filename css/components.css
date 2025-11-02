@@ -420,9 +420,16 @@
   font-weight: 500;
   font-style: italic;
 }
-.artist-name,
 .playlist-title {
   font-size: 80px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1;
+  cursor: pointer;
+}
+.artist-name {
+  font-size: 90px;
   font-weight: 900;
   color: var(--text-primary);
   margin-bottom: var(--spacing-sm);
@@ -1301,45 +1308,6 @@
 }
 
 /* Playlist view */
-.edit-playlist-modal {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  justify-content: center;
-  align-items: center;
-}
-.edit-playlist-modal.show {
-  opacity: 1;
-  display: flex;
-}
-.playlist-view {
-  background: #181818;
-  color: white;
-  padding: 20px;
-  border-radius: 12px;
-  position: relative;
-  width: 400px;
-}
-
-.close-modal {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 22px;
-  cursor: pointer;
-}
-.playlist-header {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-
 .playlist-cover {
   position: relative;
   width: 220px;
@@ -1395,28 +1363,15 @@
   letter-spacing: 1px;
 }
 
-.playlist-name {
-  font-size: 48px;
-  font-weight: 700;
-  color: var(--text-primary);
-  outline: none;
-}
-
-.playlist-desc {
-  font-size: 16px;
-  color: var(--text-secondary);
-  margin: 10px 0 20px;
-  outline: none;
-}
-
-.playlist-actions .btn {
-  background-color: var(--accent-primary);
+.playlist-action .btn {
+  background-color: var(--text-primary);
   border: none;
-  padding: 10px 24px;
+  padding: 10px 30px;
   border-radius: 30px;
-  color: white;
-  font-weight: 600;
+  color: var(--bg-primary);
+  font-weight: 700;
   cursor: pointer;
+  font-size: 18px;
   transition: background-color 0.2s ease;
 }
 
@@ -1424,10 +1379,74 @@
   background-color: var(--accent-hover);
 }
 
+p.img-warning {
+  margin-top: 15px;
+  font-size: 12px;
+  font-weight: 700;
+}
 .tracks-placeholder {
   margin-top: 40px;
   font-size: 18px;
   color: var(--text-secondary);
+}
+/* Playlist Modal */
+.edit-playlist-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  justify-content: center;
+  align-items: center;
+}
+.edit-playlist-modal.show {
+  opacity: 1;
+  display: flex;
+}
+.playlist-modal {
+  background: #181818;
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+  width: 600px;
+}
+
+.playlist-header {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.edit-playlist-modal .playlist-content {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+.edit-playlist-modal .playlist-header {
+  margin-bottom: 25px;
+}
+.edit-playlist-modal .playlist-meta {
+  display: flex;
+  flex-direction: column;
+  height: 220px;
+}
+.edit-playlist-modal #playlistName,
+.edit-playlist-modal #playlistDesc {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #282828;
+  color: #fff;
+  font-size: 16px;
+}
+
+.edit-playlist-modal #playlistDesc {
+  resize: none;
+  flex: 1;
+  margin-top: 15px;
 }
 
 /* === Liked Songs cover trong hero === */

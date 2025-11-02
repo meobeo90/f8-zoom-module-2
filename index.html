@@ -407,13 +407,15 @@
         </div>
       </div>
     </div>
-    <!-- Playlist view -->
+    <!-- Edit Playlist Modal -->
     <div class="edit-playlist-modal">
-      <section class="playlist-view">
-        <i class="fa-solid fa-xmark close-modal"></i>
+      <section class="playlist-modal">
         <div class="playlist-header">
           <h1 class="edit-playlist">Edit Detail</h1>
+          <i class="fa-solid fa-xmark modal-close"></i>
+        </div>
 
+        <div class="playlist-content">
           <div class="playlist-cover">
             <img
               src="./img/placeholder-playlists.png"
@@ -426,24 +428,22 @@
             </div>
             <input type="file" id="coverInput" accept="image/*" hidden />
           </div>
+
+          <div class="playlist-meta">
+            <input type="text" class="playlist-name" id="playlistName" />
+            <textarea
+              class="playlist-desc"
+              id="playlistDesc"
+              placeholder="Add an optional description"
+            ></textarea>
+          </div>
         </div>
-        <div class="playlist-meta">
-          <p class="playlist-type">Playlist</p>
-          <h1
-            class="playlist-name"
-            contenteditable="true"
-            id="playlistName"
-          ></h1>
-          <p
-            class="playlist-desc"
-            contenteditable="true"
-            id="playlistDesc"
-            placeholder="Add an optional description"
-          ></p>
+
+        <div class="playlist-footer">
           <div class="playlist-action">
             <button class="btn save-btn" id="savePlaylistBtn">Save</button>
           </div>
-          <p>
+          <p class="img-warning">
             By proceeding, you agree to give Spotify access to the image you
             choose to upload. Please make sure you have the right to upload the
             image.
@@ -451,7 +451,6 @@
         </div>
       </section>
     </div>
-
     <script src="./main.js" type="module"></script>
   </body>
 </html>
