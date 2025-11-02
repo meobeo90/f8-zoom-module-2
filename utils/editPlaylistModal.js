@@ -171,18 +171,21 @@ export function openEditModal(playlist) {
   };
 
   // --- Đóng modal ---
-  function closeModalWithWarning() {
+  function closeModalWithWarning(e) {
     if (hasChanges) {
-      showToast("Press save to keep changes you've made.", "warning");
+      e?.stopPropagation?.();
+      e?.preventDefault?.();
+      showToast("Press Save to keep changes before closing.", "warning");
+      return;
     }
     modal.classList.remove("show");
   }
 
-  closeBtn.onclick = closeModalWithWarning;
-
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModalWithWarning();
+    if (e.target === modal) closeModalWithWarning(e);
   });
+
+  closeBtn.onclick = (e) => closeModalWithWarning(e);
 }
 
 window.openEditModal = openEditModal;
