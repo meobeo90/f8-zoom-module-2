@@ -1316,6 +1316,7 @@
   border-radius: 8px;
   overflow: hidden;
   background-color: #282828;
+  cursor: pointer;
 }
 
 .playlist-cover img {
